@@ -30,24 +30,20 @@ export const createfileSearchStore = async (displayName) => {
 
 // upload the file
 export const uploadFileToStore = async (displayName, file) => {
-  // checking if file exists
-  //   try {
-  //     const fileSearchStore = await createfileSearchStore(displayName);
-  //     const docs = await ragModel.fileSearchStores.documents.list({
-  //       parent: fileSearchStore.name,
-  //     });
-
-  //   } catch (error) {}
-
   // uploading if file does not exists
   try {
-    const fileSearchStore = await createfileSearchStore(displayName);
-    const uploadFile = await ragModel.fileSearchStores.uploadToFileSearchStore({
+    const newFile = await ragModel.files.upload({
       file: file,
-      fileSearchStoreName: fileSearchStore.name,
       config: {
-        displayName: displayName,
+        name: displayName,
       },
+    });
+
+    // })
+    const fileSearchStore = await createfileSearchStore(displayName);
+    let uploadFile = await ragModel.fileSearchStores.importFile({
+      fileSearchStoreName: fileSearchStore.name,
+      fileName: newFile.name,
     });
 
     if (!uploadFile) {
@@ -59,10 +55,10 @@ export const uploadFileToStore = async (displayName, file) => {
     // control when upload delay
     if (!uploadFile.done) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
-      uploadFile = await ragModel.operations.get({ operation });
+      uploadFile = await ragModel.operations.get({ operation: uploadFile });
     }
     return fileSearchStore.name;
   } catch (error) {
-    throw new Error(error);
+    console.error(error);
   }
 };

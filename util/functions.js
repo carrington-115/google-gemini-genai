@@ -86,7 +86,7 @@ export const getDataEmbeddings = async (data) => {
   }
 };
 
-export const ragModelGenerator = async (recipePrompt, displayName) => {
+export const ragModelGenerator = async (recipePrompt, storeName) => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -95,9 +95,7 @@ export const ragModelGenerator = async (recipePrompt, displayName) => {
         tools: [
           {
             fileSearch: {
-              fileSearchStoreNames: [
-                (await createfileSearchStore(displayName)).name,
-              ],
+              fileSearchStoreNames: [storeName],
             },
           },
         ],
