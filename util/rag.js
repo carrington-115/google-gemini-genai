@@ -9,10 +9,10 @@ import { ai } from "./config.js";
 const ragModel = ai;
 
 // create the file in memory
-export const createfileSearchStore = async (filename) => {
+export const createfileSearchStore = async (displayName) => {
   try {
     const fileSearchStore = await ragModel.fileSearchStores.create({
-      config: { displayName: filename },
+      config: { displayName: displayName },
     });
 
     if (!fileSearchStore) {
@@ -22,19 +22,31 @@ export const createfileSearchStore = async (filename) => {
     }
     return fileSearchStore;
   } catch (error) {
-    throw new Error(error);
+    if (error.message.includes("already exists")) {
+      throw new Error("File already exists");
+    } else throw new Error(error);
   }
 };
 
 // upload the file
-export const uploadFileToStore = async (filename, file) => {
+export const uploadFileToStore = async (displayName, file) => {
+  // checking if file exists
+  //   try {
+  //     const fileSearchStore = await createfileSearchStore(displayName);
+  //     const docs = await ragModel.fileSearchStores.documents.list({
+  //       parent: fileSearchStore.name,
+  //     });
+
+  //   } catch (error) {}
+
+  // uploading if file does not exists
   try {
-    const fileSearchStore = await createfileSearchStore(filename);
+    const fileSearchStore = await createfileSearchStore(displayName);
     const uploadFile = await ragModel.fileSearchStores.uploadToFileSearchStore({
       file: file,
       fileSearchStoreName: fileSearchStore.name,
       config: {
-        displayName: filename,
+        displayName: displayName,
       },
     });
 
@@ -49,6 +61,7 @@ export const uploadFileToStore = async (filename, file) => {
       await new Promise((resolve) => setTimeout(resolve, 5000));
       uploadFile = await ragModel.operations.get({ operation });
     }
+    return fileSearchStore.name;
   } catch (error) {
     throw new Error(error);
   }

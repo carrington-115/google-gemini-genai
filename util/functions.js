@@ -86,7 +86,7 @@ export const getDataEmbeddings = async (data) => {
   }
 };
 
-export const ragModelGenerator = async (recipePrompt) => {
+export const ragModelGenerator = async (recipePrompt, displayName) => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -95,7 +95,9 @@ export const ragModelGenerator = async (recipePrompt) => {
         tools: [
           {
             fileSearch: {
-              fileSearchStoreNames: [createfileSearchStore.name],
+              fileSearchStoreNames: [
+                (await createfileSearchStore(displayName)).name,
+              ],
             },
           },
         ],
@@ -107,6 +109,7 @@ export const ragModelGenerator = async (recipePrompt) => {
       err.message = "Some error occurred while prompting the model";
       throw err;
     }
+    return response.text;
   } catch (error) {
     console.error(error);
   }
