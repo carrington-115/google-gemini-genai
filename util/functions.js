@@ -1,4 +1,5 @@
-import { openAIAgent } from "./config.js";
+import { ai, openAIAgent } from "./config.js";
+import { createfileSearchStore } from "./rag.js";
 
 export const generateRecipe = async (mealName) => {
   // prompt format: this parses mealName
@@ -82,5 +83,31 @@ export const getDataEmbeddings = async (data) => {
     return embedddedData;
   } catch (error) {
     throw new Error("A server error occurred");
+  }
+};
+
+export const ragModelGenerator = async (recipePrompt) => {
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: recipePrompt,
+      config: {
+        tools: [
+          {
+            fileSearch: {
+              fileSearchStoreNames: [createfileSearchStore.name],
+            },
+          },
+        ],
+      },
+    });
+
+    if (!response) {
+      const err = new Error();
+      err.message = "Some error occurred while prompting the model";
+      throw err;
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
