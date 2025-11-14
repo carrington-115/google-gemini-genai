@@ -1,6 +1,7 @@
 import express from "express";
 import {
   generateRecipeController,
+  getEmbeddingsController,
   getRestaurantDetailsController,
   simpleAgentController,
 } from "../controllers/openai.controllers.js";
@@ -12,5 +13,6 @@ router.get("/", (req, res) => {
 router.post("/simple", simpleAgentController);
 router.post("/function/recipe", generateRecipeController);
 router.post("/structure/restaurants", getRestaurantDetailsController);
+router.post("/embeddings", getEmbeddingsController);
 
 export default router;

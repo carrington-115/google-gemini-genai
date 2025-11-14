@@ -68,3 +68,19 @@ export const generateRestaurants = async (meal, city) => {
     throw new Error("A server error occurred");
   }
 };
+
+export const getDataEmbeddings = async (data) => {
+  try {
+    const embedddedData = await openAIAgent.embeddings.create({
+      model: "gemini-embedding-001",
+      input: data,
+    });
+
+    if (!embedddedData) {
+      throw new Error("The data has not been properly embedded");
+    }
+    return embedddedData;
+  } catch (error) {
+    throw new Error("A server error occurred");
+  }
+};

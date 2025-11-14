@@ -1,4 +1,8 @@
-import { generateRecipe, generateRestaurants } from "../util/functions.js";
+import {
+  generateRecipe,
+  generateRestaurants,
+  getDataEmbeddings,
+} from "../util/functions.js";
 import {
   generateStructuredRestaurants,
   openAIResponse,
@@ -52,6 +56,16 @@ export const getRestaurantDetailsController = async (req, res) => {
       throw new Error();
     }
     res.status(201).json({ success: true, response: response });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getEmbeddingsController = async (req, res) => {
+  const { prompt } = req.body;
+  try {
+    const embeddings = await getDataEmbeddings(prompt);
+    res.status(201).json({ success: true, embeddings: embeddings });
   } catch (error) {
     console.error(error);
   }
